@@ -9,6 +9,7 @@
  * - Usa la hora del reloj de la TV/dispositivo.
  *
  * Para probar sin esperar:  /tv?demo=aviso   o   /tv?demo=cerrado
+ * Para forzar un tema al probar: agrega &tema=halloween o &tema=normal
  */
 (function () {
   'use strict';
@@ -28,7 +29,23 @@
     minutosAntes: 10,
     // true: después de cerrar muestra "Cerrado" hasta que vuelva a abrir.
     // false: la pantalla desaparece al cerrar.
-    mostrarCerrado: true
+    mostrarCerrado: true,
+    // 'auto' = Halloween todo octubre y normal el resto del año.
+    // También puedes forzar 'halloween' o 'normal'.
+    tema: 'auto'
+  };
+
+  var TEXTOS = {
+    normal: {
+      iconoAviso: '🍕', iconoCerrado: '🍕',
+      subAviso: 'Últimos pedidos — haz el tuyo ya',
+      gracias: '¡Gracias por tu preferencia!'
+    },
+    halloween: {
+      iconoAviso: '🎃', iconoCerrado: '👻',
+      subAviso: 'Últimos pedidos… ¡si te atreves!',
+      gracias: 'Los fantasmas cuidan el horno.'
+    }
   };
 
   var DIAS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
@@ -37,6 +54,13 @@
 
   var desfase = 0; // solo se usa en modo demo
   function ahora() { return new Date(Date.now() + desfase); }
+
+  function temaActivo() {
+    var m = /[?&]tema=(halloween|normal)/.exec(location.search);
+    if (m) return m[1];
+    if (CONFIG.tema !== 'auto') return CONFIG.tema;
+    return ahora().getMonth() === 9 ? 'halloween' : 'normal';
+  }
 
   function mediodia(fecha, dias) {
     var d = new Date(fecha);
@@ -137,9 +161,46 @@
     '@keyframes jp-latido{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}' +
     '@keyframes jp-flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5vmin)}}' +
     '@keyframes jp-entrada{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}' +
-    '@keyframes jp-subir{0%{transform:translateY(0);opacity:0}10%{opacity:1}100%{transform:translateY(-110vh);opacity:0}}';
+    '@keyframes jp-subir{0%{transform:translateY(0);opacity:0}10%{opacity:1}100%{transform:translateY(-110vh);opacity:0}}' +
 
-  var raiz, titulo, sub, tiempo, progreso, modoActual;
+    // ---- Tema Halloween ----
+    '#jp-cierre .jp-deco{display:none}' +
+    '#jp-cierre.jp-halloween .jp-deco{display:block}' +
+    '#jp-cierre.jp-halloween{background:radial-gradient(circle at 50% 45%,#3b1460 0%,#1a0830 50%,#07020d 100%);color:#f3e9ff}' +
+    '#jp-cierre.jp-halloween .jp-rayos{background:repeating-conic-gradient(rgba(255,122,0,.06) 0deg 10deg,transparent 10deg 20deg)}' +
+    '#jp-cierre .jp-luna{position:absolute;top:6vmin;right:8vmin;width:20vmin;height:20vmin;border-radius:50%;opacity:.9;' +
+      'background:radial-gradient(circle at 40% 40%,#fff6d5,#ffd27a 60%,#e8a33a);box-shadow:0 0 8vmin 2vmin rgba(255,200,100,.35)}' +
+    '#jp-cierre .jp-niebla{position:absolute;left:0;bottom:-5vh;width:200%;height:35vh;animation:jp-niebla 30s linear infinite alternate;' +
+      'background:radial-gradient(ellipse at 20% 100%,rgba(200,190,255,.28),transparent 60%),radial-gradient(ellipse at 55% 100%,rgba(200,190,255,.2),transparent 60%),' +
+      'radial-gradient(ellipse at 85% 100%,rgba(200,190,255,.25),transparent 60%)}' +
+    '#jp-cierre .jp-arana{position:absolute;top:0;left:12%;width:2px;height:20vh;background:rgba(255,255,255,.35);animation:jp-colgar 6s ease-in-out infinite}' +
+    '#jp-cierre .jp-arana span{position:absolute;bottom:-5vmin;left:-3.2vmin;font-size:6.5vmin;line-height:1}' +
+    '#jp-cierre .jp-murcielago{position:absolute;left:0;font-size:6vmin;line-height:1;animation:jp-volar linear infinite}' +
+    '#jp-cierre .jp-murcielago i{display:inline-block;font-style:normal;animation:jp-aleteo .22s ease-in-out infinite alternate}' +
+    '#jp-cierre.jp-halloween .jp-pizza{animation:jp-columpio 2.4s ease-in-out infinite;transform-origin:50% 0;filter:drop-shadow(0 0 4vmin rgba(255,122,0,.85))}' +
+    '#jp-cierre.jp-halloween.jp-cerrado .jp-pizza{animation:jp-fantasma 4s ease-in-out infinite;filter:drop-shadow(0 0 4vmin rgba(200,180,255,.75))}' +
+    '#jp-cierre.jp-halloween .jp-titulo{font-family:"Creepster",Impact,fantasy;font-weight:400;letter-spacing:.06em;color:#ff7a00;' +
+      'text-shadow:0 0 2vmin rgba(255,122,0,.9),0 0 5vmin rgba(150,60,255,.7),0 .5vmin 0 #3a0a00;' +
+      'animation:jp-latido 1.6s ease-in-out infinite,jp-parpadeo 5s linear infinite}' +
+    '#jp-cierre.jp-halloween.jp-cerrado .jp-titulo{animation:jp-flotar 4s ease-in-out infinite,jp-parpadeo 7s linear infinite}' +
+    '#jp-cierre.jp-halloween .jp-progreso{stroke:#ff7a00}' +
+    '#jp-cierre.jp-halloween .jp-reloj svg{filter:drop-shadow(0 0 1.5vmin rgba(255,122,0,.8))}' +
+    '#jp-cierre.jp-halloween .jp-brasa{background:#ff9a3c;box-shadow:0 0 1.5vmin #ff6a00}' +
+    '#jp-cierre.jp-halloween .jp-brasa.jp-alt{background:#c9a6ff;box-shadow:0 0 1.5vmin #8a4dff}' +
+    '#jp-cierre.jp-halloween.jp-urgente .jp-titulo{color:#ff4a3d;animation-duration:.6s,2s;' +
+      'text-shadow:0 0 2vmin rgba(255,60,40,.95),0 0 6vmin rgba(255,0,0,.7),0 .5vmin 0 #3a0000}' +
+    '#jp-cierre.jp-halloween.jp-urgente .jp-progreso{stroke:#ff3030}' +
+    '#jp-cierre.jp-halloween.jp-urgente .jp-reloj svg{filter:drop-shadow(0 0 2vmin rgba(255,30,30,.9))}' +
+    '@keyframes jp-columpio{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}' +
+    '@keyframes jp-fantasma{0%,100%{transform:translateY(0) rotate(-4deg);opacity:.85}50%{transform:translateY(-3vmin) rotate(4deg);opacity:1}}' +
+    '@keyframes jp-parpadeo{0%,88%,90%,94%,100%{opacity:1}89%{opacity:.35}92%{opacity:.55}}' +
+    '@keyframes jp-niebla{to{transform:translateX(-50%)}}' +
+    '@keyframes jp-colgar{0%,100%{height:12vh}50%{height:32vh}}' +
+    '@keyframes jp-aleteo{to{transform:scaleY(.55)}}' +
+    '@keyframes jp-volar{0%{transform:translate(-15vw,0)}25%{transform:translate(20vw,-6vh)}50%{transform:translate(50vw,4vh)}' +
+      '75%{transform:translate(80vw,-5vh)}100%{transform:translate(115vw,0)}}';
+
+  var raiz, icono, titulo, sub, tiempo, progreso, modoActual, textos, fuenteCargada;
 
   function construir() {
     var estilo = document.createElement('style');
@@ -151,6 +212,9 @@
     raiz.setAttribute('aria-live', 'polite');
     raiz.innerHTML =
       '<div class="jp-rayos"></div>' +
+      '<div class="jp-deco jp-luna"></div>' +
+      '<div class="jp-deco jp-niebla"></div>' +
+      '<div class="jp-deco jp-arana"><span>🕷️</span></div>' +
       '<div class="jp-caja">' +
         '<div class="jp-pizza">🍕</div>' +
         '<h1 class="jp-titulo"></h1>' +
@@ -164,7 +228,7 @@
 
     for (var i = 0; i < 30; i++) {
       var b = document.createElement('span');
-      b.className = 'jp-brasa';
+      b.className = i % 2 ? 'jp-brasa jp-alt' : 'jp-brasa';
       b.style.left = (Math.random() * 100) + '%';
       b.style.animationDuration = (5 + Math.random() * 7) + 's';
       b.style.animationDelay = (-Math.random() * 12) + 's';
@@ -173,7 +237,21 @@
       raiz.appendChild(b);
     }
 
+    var caja = raiz.querySelector('.jp-caja');
+    for (var j = 0; j < 6; j++) {
+      var m = document.createElement('span');
+      m.className = 'jp-deco jp-murcielago';
+      m.innerHTML = '<i>🦇</i>';
+      m.style.top = (5 + Math.random() * 55) + '%';
+      m.style.fontSize = (4 + Math.random() * 4) + 'vmin';
+      m.style.animationDuration = (9 + Math.random() * 8) + 's';
+      m.style.animationDelay = (-Math.random() * 17) + 's';
+      if (j % 2) m.style.animationDirection = 'reverse';
+      raiz.insertBefore(m, caja);
+    }
+
     document.body.appendChild(raiz);
+    icono = raiz.querySelector('.jp-pizza');
     titulo = raiz.querySelector('.jp-titulo');
     sub = raiz.querySelector('.jp-sub');
     tiempo = raiz.querySelector('.jp-tiempo');
@@ -188,12 +266,16 @@
 
     if (e.modo !== modoActual) {
       modoActual = e.modo;
-      raiz.className = '';
+      var tema = temaActivo();
+      textos = TEXTOS[tema];
+      if (tema === 'halloween') cargarFuente();
+      raiz.className = 'jp-' + tema + (e.modo === 'cerrado' ? ' jp-cerrado' : '');
       if (e.modo === 'aviso') {
+        icono.textContent = textos.iconoAviso;
         titulo.textContent = '¡Estamos por cerrar!';
-        sub.textContent = 'Últimos pedidos — haz el tuyo ya';
+        sub.textContent = textos.subAviso;
       } else if (e.modo === 'cerrado') {
-        raiz.className = 'jp-cerrado';
+        icono.textContent = textos.iconoCerrado;
       }
       // Forzar reflow para que la animación de entrada se repita al cambiar de modo.
       void raiz.offsetWidth;
@@ -207,10 +289,20 @@
     } else if (e.modo === 'cerrado') {
       var abreHoy = e.proxima && e.proxima.toDateString() === t0.toDateString();
       titulo.textContent = abreHoy ? 'Cerrado' : 'Cerrado por hoy';
-      sub.textContent = '¡Gracias por tu preferencia! ' + textoProxima(e.proxima, t0);
+      sub.textContent = textos.gracias + ' ' + textoProxima(e.proxima, t0);
     }
 
     raiz.classList.toggle('jp-on', visible);
+  }
+
+  // Fuente "Creepster" de Google Fonts para el título de Halloween (si no carga, usa Impact).
+  function cargarFuente() {
+    if (fuenteCargada) return;
+    fuenteCargada = true;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Creepster&display=swap';
+    document.head.appendChild(link);
   }
 
   function prepararDemo() {
