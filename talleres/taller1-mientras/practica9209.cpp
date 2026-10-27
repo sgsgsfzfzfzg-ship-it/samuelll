@@ -1,27 +1,23 @@
-// practica9209.cpp
-// Imprime cada termino y la sumatoria de los primeros N terminos de
-// la serie 1/2, 3/4, 5/8, 7/16, 9/32, ...
-// El numerador aumenta de 2 en 2 y el denominador se duplica.
-#include <iostream>
+// Samuel Munoz Vargas
+// practica9209 - serie 1/2, 3/4, 5/8, 7/16 ...
+#include<iostream>
+#include<stdlib.h>
 using namespace std;
 
-int main() {
-    double num = 1, den = 2, ter, sum = 0;
-    int n, cont = 0;
-
-    cout << "Cuantos terminos desea sumar? ";
-    cin >> n;
-
-    while (cont < n) {
-        ter = num / den;
-        sum = sum + ter;
-        cout << "Termino " << cont + 1 << ": " << num << "/" << den
-             << " = " << ter << endl;
-        num = num + 2;
-        den = den * 2;
-        cont = cont + 1;
+int main(){
+    float num=1,den=2,ter,sum=0;
+    int n,cont=0;
+    cout<<"Cuantos terminos? ";
+    cin>>n;
+    while(cont<n){
+        ter=num/den;
+        cout<<num<<"/"<<den<<" = "<<ter<<endl;
+        sum=sum+ter;
+        num=num+2;
+        den=den*2;
+        cont=cont+1;
     }
-
-    cout << "La sumatoria es: " << sum << endl;
+    cout<<"La sumatoria es: "<<sum<<endl;
+    system("pause");
     return 0;
 }

@@ -1,17 +1,18 @@
-// practica302.cpp
-// Muestra los multiplos de 5 que hay entre 1 y un numero leido.
-#include <iostream>
+// Samuel Munoz Vargas
+// practica302 - multiplos de 5
+#include<iostream>
+#include<stdlib.h>
 using namespace std;
 
-int main() {
-    int n;
-
-    cout << "Ingrese un numero: ";
-    cin >> n;
-
-    cout << "Multiplos de 5 entre 1 y " << n << ":" << endl;
-    for (int i = 5; i <= n; i = i + 5) {
-        cout << i << endl;
+int main(){
+    int n,i;
+    cout<<"Ingrese un numero: ";
+    cin>>n;
+    for(i=1;i<=n;i++){
+        if(i%5==0){
+            cout<<i<<endl;
+        }
     }
+    system("pause");
     return 0;
 }
