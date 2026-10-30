@@ -47,8 +47,10 @@
     return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
 
+  // Formato colombiano: $12.000 (punto para miles; coma para decimales si BARRIO.decimales > 0).
   function dinero(n) {
-    return BARRIO.moneda + Number(n).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    var partes = Number(n).toFixed(BARRIO.decimales || 0).split('.');
+    return BARRIO.moneda + partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (partes[1] ? ',' + partes[1] : '');
   }
 
   function minutos(hora) {
@@ -249,7 +251,7 @@
     var h = horario(t);
     var cat = CATEGORIAS[t.categoria] || { nombre: '' };
     var entrega = t.tipo === 'servicio' ? '📅 Reserva tu cita'
-      : '🛵 ' + escapar(t.tiempo) + ' · ' + (t.envio ? 'Envío ' + dinero(t.envio) : '<b class="gratis">Envío gratis</b>');
+      : '🛵 ' + escapar(t.tiempo) + ' · ' + (t.envio ? 'Domicilio ' + dinero(t.envio) : '<b class="gratis">Domicilio gratis</b>');
     return '<a class="tienda' + (h.abierto ? '' : ' cerrada') + '" href="#tienda-' + t.id + '">' +
       '<div class="tienda-portada" style="--c:' + t.color + '">' +
         (t.foto ? '<img src="' + escapar(t.foto) + '" alt="" loading="lazy">' : '<span aria-hidden="true">' + t.emoji + '</span>') +
@@ -377,7 +379,7 @@
         '<div class="t-datos">' +
           '<span class="' + (h.abierto ? 'abierto' : 'cerrado') + '">' + (h.abierto ? '🟢 ' : '🔴 ') + escapar(h.texto) + '</span>' +
           (t.tipo === 'servicio' ? '<span>📅 Atención con cita</span>'
-            : '<span>🛵 ' + escapar(t.tiempo) + '</span><span>' + (t.envio ? 'Envío ' + dinero(t.envio) : '<b class="gratis">Envío gratis</b>') + '</span>') +
+            : '<span>🛵 ' + escapar(t.tiempo) + '</span><span>' + (t.envio ? 'Domicilio ' + dinero(t.envio) : '<b class="gratis">Domicilio gratis</b>') + '</span>') +
         '</div>' +
         '<div class="t-acciones">' +
           '<a href="' + wa(t.whatsapp, 'Hola ' + t.nombre + ', te escribo desde Barrio 👋') + '" target="_blank" rel="noopener">💬 Escribir</a>' +
@@ -481,7 +483,7 @@
               botonAgregar(i.x.key) + '<strong class="ct-total">' + dinero(i.x.p.precio * i.cant) + '</strong></div>';
           }).join('') +
           '<div class="ct-linea"><span>Subtotal</span><span>' + dinero(g.subtotal) + '</span></div>' +
-          '<div class="ct-linea"><span>Envío</span><span>' + (g.envio ? dinero(g.envio) : '<b class="gratis">Gratis</b>') + '</span></div>' +
+          '<div class="ct-linea"><span>Domicilio</span><span>' + (g.envio ? dinero(g.envio) : '<b class="gratis">Gratis</b>') + '</span></div>' +
         '</section>';
       }).join('') +
       (cerradas.length ? '<p class="aviso">' + cerradas.map(function (g) { return escapar(g.t.nombre); }).join(', ') +
@@ -489,14 +491,14 @@
       '<form id="form-pedido" class="form caja-pago">' +
         '<h2>Datos de entrega</h2>' +
         '<label>Tu nombre <input name="nombre" required value="' + escapar(cliente.nombre) + '" autocomplete="name"></label>' +
-        '<label>Teléfono <input name="telefono" type="tel" required value="' + escapar(cliente.telefono) + '" autocomplete="tel"></label>' +
-        '<label class="ancho">Dirección <input name="direccion" required value="' + escapar(cliente.direccion) + '" placeholder="Calle, número de casa o apartamento" autocomplete="street-address"></label>' +
+        '<label>Teléfono <input name="telefono" type="tel" inputmode="tel" placeholder="Ej: 300 123 4567" required value="' + escapar(cliente.telefono) + '" autocomplete="tel"></label>' +
+        '<label class="ancho">Dirección <input name="direccion" required value="' + escapar(cliente.direccion) + '" placeholder="Ej: Calle 45 # 12-30, apto 201" autocomplete="street-address"></label>' +
         '<label class="ancho">Punto de referencia <input name="referencia" value="' + escapar(cliente.referencia) + '" placeholder="Ej: casa de rejas verdes"></label>' +
         '<fieldset class="ancho"><legend>Forma de pago</legend><div class="pagos">' + pagos + '</div></fieldset>' +
-        '<label class="ancho">Nota para la tienda <textarea name="nota" rows="2" placeholder="Ej: sin cebolla, talla M, traer cambio de 20"></textarea></label>' +
+        '<label class="ancho">Nota para la tienda <textarea name="nota" rows="2" placeholder="Ej: sin cebolla, talla M, traer cambio de $50.000"></textarea></label>' +
         '<div class="ancho resumen">' +
           '<div class="ct-linea"><span>Productos (' + r.unidades + ')</span><span>' + dinero(r.total - r.grupos.reduce(function (s, g) { return s + g.envio; }, 0)) + '</span></div>' +
-          '<div class="ct-linea"><span>Envíos</span><span>' + dinero(r.grupos.reduce(function (s, g) { return s + g.envio; }, 0)) + '</span></div>' +
+          '<div class="ct-linea"><span>Domicilios</span><span>' + dinero(r.grupos.reduce(function (s, g) { return s + g.envio; }, 0)) + '</span></div>' +
           '<div class="ct-linea total"><span>Total</span><span>' + dinero(r.total) + '</span></div>' +
         '</div>' +
         '<button type="submit" class="btn-principal ancho">Hacer pedido · ' + dinero(r.total) + '</button>' +
@@ -511,7 +513,7 @@
       g.items.map(function (i) { return '• ' + i.cant + ' x ' + i.nombre + ' — ' + dinero(i.precio * i.cant); }).join('\n'),
       '',
       'Subtotal: ' + dinero(g.subtotal),
-      'Envío: ' + (g.envio ? dinero(g.envio) : 'gratis'),
+      'Domicilio: ' + (g.envio ? dinero(g.envio) : 'gratis'),
       '*Total: ' + dinero(g.subtotal + g.envio) + '*',
       '',
       '👤 ' + pedido.cliente.nombre + ' · ' + pedido.cliente.telefono,
@@ -612,7 +614,7 @@
   function abrirDireccion() {
     $('modal-contenido').innerHTML = '<div class="m-cuerpo"><h2>📍 ¿Dónde te lo llevamos?</h2>' +
       '<form id="form-direccion" class="form">' +
-        '<label class="ancho">Dirección <input name="direccion" required value="' + escapar(cliente.direccion) + '" placeholder="Calle, número de casa o apartamento"></label>' +
+        '<label class="ancho">Dirección <input name="direccion" required value="' + escapar(cliente.direccion) + '" placeholder="Ej: Calle 45 # 12-30, apto 201"></label>' +
         '<label class="ancho">Punto de referencia <input name="referencia" value="' + escapar(cliente.referencia) + '" placeholder="Ej: casa de rejas verdes"></label>' +
         '<button type="submit" class="btn-principal ancho">Guardar dirección</button></form></div>';
     $('modal').hidden = false;
