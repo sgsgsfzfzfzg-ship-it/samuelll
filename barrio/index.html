@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo en mi Barrio</title>
+  <meta name="description" content="Todos los negocios y servicios del barrio en un solo lugar: comida, ropa, barberías, talleres, repuestos y más.">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="portada">
+    <div class="contenedor">
+      <p class="marca">📍 <span id="nombre-barrio">Mi Barrio</span></p>
+      <h1>Todo en mi Barrio</h1>
+      <p class="lema" id="lema"></p>
+      <label class="buscador">
+        <span class="sr">Buscar</span>
+        <input id="buscar" type="search" placeholder="¿Qué buscas? Ej: corte, frenos, pizza…" autocomplete="off">
+      </label>
+    </div>
+  </header>
+
+  <nav class="categorias" aria-label="Categorías">
+    <div class="contenedor fila-chips" id="chips"></div>
+  </nav>
+
+  <main class="contenedor">
+    <div class="barra">
+      <p id="contador" aria-live="polite"></p>
+      <label class="interruptor">
+        <input type="checkbox" id="solo-abiertos">
+        <span>Solo abiertos ahora</span>
+      </label>
+    </div>
+
+    <section id="lista" class="lista"></section>
+    <p id="vacio" class="vacio" hidden>No encontramos nada con esa búsqueda. 🤔<br>Prueba con otra palabra o otra categoría.</p>
+
+    <section class="sumate" id="sumate">
+      <h2>¿Tienes un negocio en el barrio?</h2>
+      <p>Súmalo gratis. Llena esto y nos llega por WhatsApp.</p>
+      <form id="form-sumate">
+        <label>Nombre del negocio <input name="nombre" required></label>
+        <label>Categoría <select name="categoria" id="sel-categoria"></select></label>
+        <label>¿Qué ofreces? <textarea name="descripcion" rows="2" required></textarea></label>
+        <label>Dirección <input name="direccion" required></label>
+        <label>WhatsApp <input name="whatsapp" type="tel" inputmode="tel" required></label>
+        <label>Horario <input name="horario" placeholder="Ej: lunes a sábado 8:00 a 18:00"></label>
+        <button type="submit">Enviar por WhatsApp</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">Hecho con cariño para los vecinos de <span class="nombre-barrio"></span> 💛</div>
+  </footer>
+
+  <script src="negocios.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
