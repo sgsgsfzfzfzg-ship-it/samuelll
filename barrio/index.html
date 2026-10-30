@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Barrio · Pide todo en tu barrio</title>
+  <title>Barrio Pedidos</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
   <meta name="description" content="Pide comida, mercado, ropa y repuestos, y reserva en barberías y talleres de tu barrio.">
   <meta name="theme-color" content="#5b21b6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
   <header class="tope">
     <div class="contenedor tope-grid">
-      <a class="logo" href="#/">barrio<span>.</span></a>
+      <a class="logo" href="#inicio">barrio<span>.</span></a>
       <button class="direccion" type="button" data-accion="direccion">
         <small>Entregar en</small>
         <strong id="txt-direccion">Elige tu dirección</strong>
@@ -20,19 +24,19 @@
         <span aria-hidden="true">🔎</span>
         <input id="buscar" type="search" placeholder="Busca arepas, frenos, corte, jeans…" autocomplete="off" aria-label="Buscar">
       </form>
-      <a class="btn-carrito-tope" href="#/carrito" aria-label="Carrito">🛍️<span class="badge-carrito" hidden></span></a>
+      <a class="btn-carrito-tope" href="#carrito" aria-label="Carrito">🛍️<span class="badge-carrito" hidden></span></a>
     </div>
   </header>
 
   <main id="vista" class="contenedor"></main>
 
-  <a class="barra-carrito" id="barra-carrito" href="#/carrito" hidden></a>
+  <a class="barra-carrito" id="barra-carrito" href="#carrito" hidden></a>
 
   <nav class="nav-abajo" aria-label="Navegación">
-    <a href="#/" data-nav="inicio"><span>🏠</span>Inicio</a>
-    <a href="#/buscar/" data-nav="buscar"><span>🔎</span>Buscar</a>
-    <a href="#/pedidos" data-nav="pedidos"><span>🧾</span>Pedidos</a>
-    <a href="#/carrito" data-nav="carrito"><span>🛍️<b class="badge-carrito" hidden></b></span>Carrito</a>
+    <a href="#inicio" data-nav="inicio"><span>🏠</span>Inicio</a>
+    <a href="#buscar" data-nav="buscar"><span>🔎</span>Buscar</a>
+    <a href="#pedidos" data-nav="pedidos"><span>🧾</span>Pedidos</a>
+    <a href="#carrito" data-nav="carrito"><span>🛍️<b class="badge-carrito" hidden></b></span>Carrito</a>
   </nav>
 
   <div class="modal" id="modal" hidden>

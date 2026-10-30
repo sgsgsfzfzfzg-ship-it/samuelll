@@ -5,14 +5,15 @@
  * No necesita servidor: el carrito, la dirección y los pedidos se guardan en el navegador
  * del cliente, y cada pedido o reserva se le envía a la tienda por WhatsApp.
  *
- * Rutas (después del #):
- *   /                 portada
- *   /tienda/<id>      tienda o servicio
- *   /categoria/<id>   tiendas y productos de una categoría
- *   /buscar/<texto>   resultados de búsqueda
- *   /carrito          carrito y pago
- *   /pedidos          mis pedidos
- *   /pedido/<id>      pedido recién hecho: enviar a cada tienda
+ * Rutas (después del #, solo letras, números y guiones para que funcionen en cualquier enlace):
+ *   inicio            portada
+ *   tienda-<id>       tienda o servicio
+ *   categoria-<id>    tiendas y productos de una categoría
+ *   buscar            resultados de lo escrito en el buscador
+ *   ofertas           todas las ofertas
+ *   carrito           carrito y pago
+ *   pedidos           mis pedidos
+ *   pedido-<id>       pedido recién hecho: enviar a cada tienda
  */
 (function () {
   'use strict';
@@ -249,7 +250,7 @@
     var cat = CATEGORIAS[t.categoria] || { nombre: '' };
     var entrega = t.tipo === 'servicio' ? '📅 Reserva tu cita'
       : '🛵 ' + escapar(t.tiempo) + ' · ' + (t.envio ? 'Envío ' + dinero(t.envio) : '<b class="gratis">Envío gratis</b>');
-    return '<a class="tienda' + (h.abierto ? '' : ' cerrada') + '" href="#/tienda/' + t.id + '">' +
+    return '<a class="tienda' + (h.abierto ? '' : ' cerrada') + '" href="#tienda-' + t.id + '">' +
       '<div class="tienda-portada" style="--c:' + t.color + '">' +
         (t.foto ? '<img src="' + escapar(t.foto) + '" alt="" loading="lazy">' : '<span aria-hidden="true">' + t.emoji + '</span>') +
         (h.abierto ? '' : '<em>' + escapar(h.texto) + '</em>') +
@@ -271,7 +272,7 @@
   function chipsCategorias(activa) {
     return '<div class="cats">' + Object.keys(CATEGORIAS).map(function (k) {
       var c = CATEGORIAS[k];
-      return '<a class="cat' + (k === activa ? ' activa' : '') + '" href="#/categoria/' + k + '">' +
+      return '<a class="cat' + (k === activa ? ' activa' : '') + '" href="#categoria-' + k + '">' +
         '<span class="cat-ico" aria-hidden="true">' + c.icono + '</span>' + escapar(c.nombre) + '</a>';
     }).join('') + '</div>';
   }
@@ -313,7 +314,7 @@
       banners +
       repetir +
       (ofertas.length ? seccion('⚡ Ofertas del día <span class="cuenta" id="cuenta"></span>',
-        carrusel(ofertas.map(function (x) { return tarjetaProducto(x); }).join('')), '#/buscar/' + encodeURIComponent('ofertas')) : '') +
+        carrusel(ofertas.map(function (x) { return tarjetaProducto(x); }).join('')), '#ofertas') : '') +
       seccion('🏪 Tiendas cerca de ti', '<div class="grid-tiendas">' +
         tiendasOrdenadas(NEGOCIOS.filter(function (t) { return t.tipo === 'tienda'; })).map(tarjetaTienda).join('') + '</div>') +
       seccion('🔥 Lo más pedido en el barrio', carrusel(masPedidos.map(function (x, i) {
@@ -348,7 +349,7 @@
         '<label class="ancho">¿Qué vendes u ofreces? <textarea name="descripcion" rows="2" required></textarea></label>' +
         '<label>Dirección <input name="direccion" required></label>' +
         '<label>WhatsApp <input name="whatsapp" type="tel" inputmode="tel" required></label>' +
-        '<button type="submit" class="btn-principal ancho">Quiero vender en Barrio</button>' +
+        '<a class="btn-wa ancho" data-wa-form href="#" target="_blank" rel="noopener">💬 Quiero vender en Barrio</a>' +
       '</form></section>';
   }
 
@@ -368,7 +369,7 @@
 
     return '<div class="t-portada" style="--c:' + t.color + '">' +
         (t.foto ? '<img src="' + escapar(t.foto) + '" alt="">' : '<span aria-hidden="true">' + t.emoji + '</span>') +
-        '<a class="volver" href="#/" aria-label="Volver">←</a></div>' +
+        '<a class="volver" href="#inicio" aria-label="Volver">←</a></div>' +
       '<div class="t-cabeza">' +
         '<h1>' + escapar(t.nombre) + '</h1>' +
         '<p class="suave">' + escapar(t.descripcion) + '</p>' +
@@ -407,10 +408,10 @@
   }
 
   var filtros = { orden: 'relevancia', abiertos: false };
+  var consulta = '';
 
-  function vistaBuscar(q) {
+  function vistaBuscar(q, soloOfertas) {
     var palabras = normalizar(q).split(/\s+/).filter(Boolean);
-    var soloOfertas = palabras.length === 1 && palabras[0] === 'ofertas';
     function encaja(texto) {
       var n = normalizar(texto);
       return palabras.every(function (w) { return n.indexOf(w) !== -1; });
@@ -462,7 +463,7 @@
     var r = resumenCarrito();
     if (!r.unidades) {
       return '<div class="vacio"><div>🛍️</div><h1>Tu carrito está vacío</h1><p>Agrega lo que necesites de las tiendas del barrio.</p>' +
-        '<a class="btn-principal" href="#/">Explorar tiendas</a></div>';
+        '<a class="btn-principal" href="#inicio">Explorar tiendas</a></div>';
     }
     var cerradas = r.grupos.filter(function (g) { return !horario(g.t).abierto; });
     var pagos = BARRIO.pagos.map(function (p, i) {
@@ -472,7 +473,7 @@
     return '<h1 class="tit-pagina">Tu carrito</h1>' +
       r.grupos.map(function (g) {
         return '<section class="caja-tienda">' +
-          '<a class="ct-cabeza" href="#/tienda/' + g.t.id + '"><span class="ct-ico" style="--c:' + g.t.color + '">' + g.t.emoji + '</span>' +
+          '<a class="ct-cabeza" href="#tienda-' + g.t.id + '"><span class="ct-ico" style="--c:' + g.t.color + '">' + g.t.emoji + '</span>' +
             '<strong>' + escapar(g.t.nombre) + '</strong><span class="suave">🛵 ' + escapar(g.t.tiempo) + '</span></a>' +
           g.items.map(function (i) {
             return '<div class="ct-item">' + visual(i.x.p, 'ct-img') +
@@ -538,13 +539,13 @@
             (g.enviado ? '✓ Enviado · enviar otra vez' : '💬 Enviar pedido a ' + escapar(g.tienda)) + '</a>' +
         '</section>';
       }).join('') +
-      '<p class="centro"><a href="#/pedidos">Ver mis pedidos</a> · <a href="#/">Seguir comprando</a></p>';
+      '<p class="centro"><a href="#pedidos">Ver mis pedidos</a> · <a href="#inicio">Seguir comprando</a></p>';
   }
 
   function vistaPedidos() {
     if (!pedidos.length) {
       return '<div class="vacio"><div>🧾</div><h1>Aún no tienes pedidos</h1><p>Cuando pidas algo lo verás aquí para repetirlo con un toque.</p>' +
-        '<a class="btn-principal" href="#/">Empezar a pedir</a></div>';
+        '<a class="btn-principal" href="#inicio">Empezar a pedir</a></div>';
     }
     return '<h1 class="tit-pagina">Mis pedidos</h1>' + pedidos.map(function (p) {
       return '<article class="caja-tienda pedido">' +
@@ -553,14 +554,14 @@
         p.grupos.map(function (g) {
           return '<p><b>' + escapar(g.tienda) + ':</b> <span class="suave">' + g.items.map(function (i) { return i.cant + '× ' + escapar(i.nombre); }).join(', ') + '</span></p>';
         }).join('') +
-        '<div class="pedido-acciones"><a href="#/pedido/' + p.id + '">Ver detalle</a>' +
+        '<div class="pedido-acciones"><a href="#pedido-' + p.id + '">Ver detalle</a>' +
         '<button type="button" class="boton-agregar" data-accion="repetir" data-id="' + p.id + '">🔁 Pedir de nuevo</button></div>' +
       '</article>';
     }).join('');
   }
 
   function vistaNoEncontrado() {
-    return '<div class="vacio"><div>🤷</div><h1>No encontramos esta página</h1><a class="btn-principal" href="#/">Ir al inicio</a></div>';
+    return '<div class="vacio"><div>🤷</div><h1>No encontramos esta página</h1><a class="btn-principal" href="#inicio">Ir al inicio</a></div>';
   }
 
   // ---------- Ventana de producto ----------
@@ -580,13 +581,13 @@
           '<label>Día <input type="date" name="dia" min="' + hoy + '" value="' + hoy + '" required></label>' +
           '<label>Hora <input type="time" name="hora" value="10:00" required></label>' +
           '<label class="ancho">Tu nombre <input name="nombre" required value="' + escapar(cliente.nombre) + '"></label>' +
-          '<button type="submit" class="btn-principal ancho">📅 Reservar por WhatsApp</button></form>'
+          '<a class="btn-wa ancho" data-wa-form href="#" target="_blank" rel="noopener">📅 Reservar por WhatsApp</a></form>'
       : botonAgregar(key, true);
 
     $('modal-contenido').innerHTML =
       visual(p, 'm-img') +
       '<div class="m-cuerpo">' +
-        '<a class="m-tienda" href="#/tienda/' + t.id + '">' + t.emoji + ' ' + escapar(t.nombre) + ' ›</a>' +
+        '<a class="m-tienda" href="#tienda-' + t.id + '">' + t.emoji + ' ' + escapar(t.nombre) + ' ›</a>' +
         '<h2>' + escapar(p.nombre) + '</h2>' +
         '<p>' + estrellas(t.rating, t.resenas) + ' · <span class="suave">' + p.vendidos + '+ ' + (t.tipo === 'servicio' ? 'reservas' : 'pedidos') + '</span></p>' +
         '<p class="m-precio">' + (d ? '<span class="sello-mini">-' + d + '%</span> ' : '') + precioHTML(p) + '</p>' +
@@ -600,6 +601,7 @@
     $('modal').hidden = false;
     document.body.classList.add('sin-scroll');
     $('modal-contenido').parentNode.scrollTop = 0;
+    actualizarEnlacesWA();
   }
 
   function cerrarModal() {
@@ -624,25 +626,29 @@
   // ---------- Rutas ----------
 
   function rutaActual() {
-    var partes = (location.hash.replace(/^#\/?/, '') || '').split('/');
-    return { vista: partes[0] || 'inicio', arg: decodeURIComponent(partes.slice(1).join('/')) };
+    var h = location.hash.slice(1);
+    var i = h.indexOf('-');
+    return { vista: (i < 0 ? h : h.slice(0, i)) || 'inicio', arg: i < 0 ? '' : h.slice(i + 1) };
   }
 
   var cuentaIntervalo;
   function pintar() {
     var r = rutaActual();
     var vistas = {
-      inicio: vistaInicio, tienda: vistaTienda, categoria: vistaCategoria, buscar: vistaBuscar,
+      inicio: vistaInicio, tienda: vistaTienda, categoria: vistaCategoria,
+      buscar: function () { return vistaBuscar(consulta); },
+      ofertas: function () { return vistaBuscar('', true); },
       carrito: vistaCarrito, pedidos: vistaPedidos, pedido: vistaPedido
     };
     vista.innerHTML = (vistas[r.vista] || vistaNoEncontrado)(r.arg);
     document.body.setAttribute('data-vista', r.vista);
 
-    if (document.activeElement !== $('buscar')) $('buscar').value = r.vista === 'buscar' && r.arg !== 'ofertas' ? r.arg : '';
+    if (document.activeElement !== $('buscar')) $('buscar').value = r.vista === 'buscar' ? consulta : '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-nav]'), function (a) {
       a.classList.toggle('activo', a.getAttribute('data-nav') === r.vista);
     });
     actualizarCarritoUI();
+    actualizarEnlacesWA();
 
     clearInterval(cuentaIntervalo);
     if ($('cuenta')) { cuentaRegresiva(); cuentaIntervalo = setInterval(cuentaRegresiva, 1000); }
@@ -672,11 +678,55 @@
     });
     guardar('carrito', carrito);
     if (!agregados) return toast('Esos productos ya no están disponibles');
-    location.hash = '#/carrito';
+    location.hash = '#carrito';
     toast('Agregamos tu pedido al carrito');
   }
 
+  // Formularios que terminan en WhatsApp: el botón es un enlace real que se actualiza mientras escribes.
+  function enlaceWA(f) {
+    var d = new FormData(f);
+    if (f.id === 'form-reserva') {
+      var x = PRODUCTOS[f.getAttribute('data-key')];
+      var dia = d.get('dia') ? new Date(d.get('dia') + 'T12:00').toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+      return wa(x.t.whatsapp, [
+        '📅 *Reserva desde Barrio*',
+        'Servicio: ' + x.p.nombre + ' (' + dinero(x.p.precio) + ')',
+        'Día: ' + dia,
+        'Hora: ' + d.get('hora'),
+        'Nombre: ' + d.get('nombre'),
+        '¿Tienen disponible?'
+      ].join('\n'));
+    }
+    return wa(BARRIO.whatsappAdmin, [
+      '¡Hola! Quiero vender en Barrio:',
+      '• Negocio: ' + d.get('nombre'),
+      '• Categoría: ' + d.get('categoria'),
+      '• Ofrece: ' + d.get('descripcion'),
+      '• Dirección: ' + d.get('direccion'),
+      '• WhatsApp: ' + d.get('whatsapp')
+    ].join('\n'));
+  }
+  function actualizarEnlacesWA() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-wa-form]'), function (a) {
+      a.href = enlaceWA(a.closest('form'));
+    });
+  }
+  document.addEventListener('input', function (e) { if (e.target.form && e.target.form.querySelector('[data-wa-form]')) actualizarEnlacesWA(); });
+
   document.addEventListener('click', function (e) {
+    var enlace = e.target.closest('[data-wa-form]');
+    if (enlace) {
+      var f = enlace.closest('form');
+      if (!f.reportValidity()) return e.preventDefault();
+      enlace.href = enlaceWA(f);
+      if (f.id === 'form-reserva') {
+        cliente.nombre = new FormData(f).get('nombre');
+        guardar('cliente', cliente);
+        setTimeout(cerrarModal, 300);
+        toast('Confirma tu cita en WhatsApp');
+      }
+      return;
+    }
     var el = e.target.closest('[data-accion]');
     if (!el) {
       // Enlaces dentro de la ventana: cerrarla al navegar.
@@ -715,6 +765,7 @@
     var f = e.target;
     var d = new FormData(f);
     e.preventDefault();
+    if (f.querySelector('[data-wa-form]')) return;
 
     if (f.id === 'form-pedido') {
       cliente = { nombre: d.get('nombre'), telefono: d.get('telefono'), direccion: d.get('direccion'), referencia: d.get('referencia') };
@@ -740,22 +791,7 @@
       guardar('pedidos', pedidos);
       carrito = {};
       guardar('carrito', carrito);
-      location.hash = '#/pedido/' + pedido.id;
-    } else if (f.id === 'form-reserva') {
-      var x = PRODUCTOS[f.getAttribute('data-key')];
-      cliente.nombre = d.get('nombre');
-      guardar('cliente', cliente);
-      var dia = new Date(d.get('dia') + 'T12:00').toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
-      window.open(wa(x.t.whatsapp, [
-        '📅 *Reserva desde Barrio*',
-        'Servicio: ' + x.p.nombre + ' (' + dinero(x.p.precio) + ')',
-        'Día: ' + dia,
-        'Hora: ' + d.get('hora'),
-        'Nombre: ' + d.get('nombre'),
-        '¿Tienen disponible?'
-      ].join('\n')), '_blank', 'noopener');
-      cerrarModal();
-      toast('Te abrimos WhatsApp para confirmar tu cita');
+      location.hash = '#pedido-' + pedido.id;
     } else if (f.id === 'form-direccion') {
       cliente.direccion = d.get('direccion');
       cliente.referencia = d.get('referencia');
@@ -764,18 +800,9 @@
       cerrarModal();
       if (rutaActual().vista === 'carrito') pintar();
       toast('📍 Dirección guardada');
-    } else if (f.id === 'form-vende') {
-      window.open(wa(BARRIO.whatsappAdmin, [
-        '¡Hola! Quiero vender en Barrio:',
-        '• Negocio: ' + d.get('nombre'),
-        '• Categoría: ' + d.get('categoria'),
-        '• Ofrece: ' + d.get('descripcion'),
-        '• Dirección: ' + d.get('direccion'),
-        '• WhatsApp: ' + d.get('whatsapp')
-      ].join('\n')), '_blank', 'noopener');
     } else if (f.id === 'form-buscar') {
       $('buscar').blur();
-      location.hash = '#/buscar/' + encodeURIComponent($('buscar').value.trim());
+      buscar($('buscar').value);
     }
   });
 
@@ -785,15 +812,15 @@
   });
 
   // Búsqueda mientras se escribe, sin llenar el historial.
+  function buscar(q) {
+    consulta = q.trim();
+    if (rutaActual().vista === 'buscar') pintar(); else location.hash = '#buscar';
+  }
   var tiempoBusqueda;
   $('buscar').addEventListener('input', function () {
-    var q = this.value.trim();
+    var q = this.value;
     clearTimeout(tiempoBusqueda);
-    tiempoBusqueda = setTimeout(function () {
-      var destino = '#/buscar/' + encodeURIComponent(q);
-      if (rutaActual().vista === 'buscar') { history.replaceState(null, '', destino); pintar(); }
-      else location.hash = destino;
-    }, 250);
+    tiempoBusqueda = setTimeout(function () { buscar(q); }, 250);
   });
 
   document.addEventListener('keydown', function (e) {
@@ -804,6 +831,7 @@
     cerrarModal();
     pintar();
     if (rutaActual().vista !== 'buscar') window.scrollTo(0, 0);
+    else if (!consulta) $('buscar').focus();
   });
 
   // Refresca "abierto/cerrado" cada minuto por si la página queda abierta.

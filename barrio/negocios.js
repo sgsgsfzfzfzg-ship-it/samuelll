@@ -42,11 +42,11 @@ var CATEGORIAS = {
   servicios: { nombre: 'Servicios',  icono: '🛠️' }
 };
 
-// Banners de la portada. destino: enlace dentro de la app (#/tienda/id, #/categoria/clave…).
+// Banners de la portada. destino: enlace dentro de la app (#tienda-<id> o #categoria-<clave>).
 var BANNERS = [
-  { titulo: 'Martes de pizza 2x1', texto: 'En Pizzas Don Toto, todo el día', emoji: '🍕', color: '#d9480f', destino: '#/tienda/don-toto' },
-  { titulo: 'Envío gratis en el mercado', texto: 'Bodega Mi Vecino te lo lleva', emoji: '🥑', color: '#2b8a3e', destino: '#/tienda/mi-vecino' },
-  { titulo: '¿Tu moto hace ruido?', texto: 'Reserva revisión en Moto Taller Rayo', emoji: '🏍️', color: '#1864ab', destino: '#/tienda/rayo' }
+  { titulo: 'Martes de pizza 2x1', texto: 'En Pizzas Don Toto, todo el día', emoji: '🍕', color: '#d9480f', destino: '#tienda-don-toto' },
+  { titulo: 'Envío gratis en el mercado', texto: 'Bodega Mi Vecino te lo lleva', emoji: '🥑', color: '#2b8a3e', destino: '#tienda-mi-vecino' },
+  { titulo: '¿Tu moto hace ruido?', texto: 'Reserva revisión en Moto Taller Rayo', emoji: '🏍️', color: '#1864ab', destino: '#tienda-rayo' }
 ];
 
 var LUN_SAB = function (abre, cierra) {
