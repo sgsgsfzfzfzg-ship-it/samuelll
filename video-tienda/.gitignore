@@ -1,0 +1,4 @@
+node_modules/
+out/capturas/
+out/*.log
+out/*.tmp*

@@ -1,0 +1,18 @@
+[
+  {"id": "intro", "texto": "¿Todavía llevas las cuentas de tu tienda en un cuaderno? Te presento el sistema de Tienda Mingo: todo tu negocio, en la palma de tu mano."},
+  {"id": "pos", "texto": "Vender es facilísimo. Busca el producto, tócalo o escanéalo con la cámara de tu celular, y cobra en un solo toque."},
+  {"id": "inventario", "texto": "En inventario tienes cada producto con su código, precio y existencias. Agrega varios a la vez con la cámara, y mira cada movimiento: qué entró, qué salió, y a qué hora."},
+  {"id": "ventas", "texto": "En ventas ves tus ventas netas, cuántas hiciste y tu venta promedio. Filtra por fechas, y exporta todo con un clic."},
+  {"id": "caja", "texto": "Abre la caja con tu base del día, registra ingresos y gastos, y al cerrar, el sistema te dice cuánto efectivo debe haber. Se acabaron los descuadres."},
+  {"id": "clientes", "texto": "Lleva a tus clientes y sus fiados siempre al día, sin cuadernos y sin olvidos."},
+  {"id": "compras", "texto": "Registra tus proveedores y tus compras, y mantén tu tienda siempre surtida."},
+  {"id": "reportes", "texto": "Y en reportes, todo tu negocio de un vistazo: tu margen de ganancia, cuánto entró en efectivo, Nequi, Daviplata o tarjeta, tus productos más vendidos, y qué necesitas reponer."},
+  {"id": "config", "texto": "La guía rápida te acompaña paso a paso. Pon los datos de tu tienda en tus comprobantes, y guarda respaldos de toda tu información."},
+  {"id": "teaser", "texto": "Y esto apenas empieza. Mira todo lo que viene para tu tienda."},
+  {"id": "whatsapp", "texto": "Envía el recibo por WhatsApp, y recuérdale a tus clientes sus fiados con un mensaje automático."},
+  {"id": "stock", "texto": "Recibe una alerta cuando un producto se esté agotando, con el pedido para tu proveedor listo en un toque."},
+  {"id": "ia", "texto": "Un asistente inteligente que te dice qué días vendes más, y cuánto vas a vender esta semana."},
+  {"id": "catalogo", "texto": "Tu propia tienda en línea, para que tus clientes te pidan a domicilio desde su celular."},
+  {"id": "extras", "texto": "Además: facturación electrónica, empleados con sus propios permisos, modo sin internet, y puntos de fidelidad para tus clientes."},
+  {"id": "outro", "texto": "Tienda Mingo. Vende más, controla todo, y duerme tranquilo."}
+]
