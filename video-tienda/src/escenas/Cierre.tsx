@@ -4,6 +4,7 @@ import {C, FUENTE} from '../tema';
 import {Fondo} from '../ui/Fondo';
 import {Logo} from '../ui/Logo';
 import {cuandoDice} from '../tiempos';
+import {useHorizontal} from '../formato';
 
 const FRASES: [string, string][] = [
   ['Vende más.', 'Vende'],
@@ -14,6 +15,7 @@ const FRASES: [string, string][] = [
 export const Cierre: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const h = useHorizontal();
   const logo = spring({frame: f - 2, fps, config: {damping: 12}});
   const cta = spring({frame: f - cuandoDice('outro', 'tranquilo') - 20, fps, config: {damping: 11}});
   const pulso = 1 + Math.max(0, Math.sin((f - 120) / 8)) * 0.03 * cta;
@@ -22,16 +24,17 @@ export const Cierre: React.FC = () => {
       <Fondo />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
         <div style={{transform: `scale(${interpolate(logo, [0, 1], [0.5, 1])})`, opacity: logo}}>
-          <Logo tam={180} />
+          <Logo tam={h ? 140 : 180} />
         </div>
-        <div style={{marginTop: 110, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10}}>
+        <div style={{marginTop: h ? 60 : 110, display: 'flex', flexDirection: h ? 'row' : 'column', alignItems: 'center', gap: h ? 36 : 10}}>
           {FRASES.map(([frase, palabra], i) => {
             const s = spring({frame: f - cuandoDice('outro', palabra), fps, config: {damping: 14}});
             return (
               <div
                 key={frase}
                 style={{
-                  fontSize: 110,
+                  fontSize: h ? 76 : 110,
+                  whiteSpace: 'nowrap',
                   fontWeight: 900,
                   letterSpacing: -4,
                   color: i === 2 ? C.lima : C.blanco,
@@ -46,7 +49,7 @@ export const Cierre: React.FC = () => {
         </div>
         <div
           style={{
-            marginTop: 110,
+            marginTop: h ? 80 : 110,
             background: C.lima,
             color: C.verdeOscuro,
             fontSize: 52,

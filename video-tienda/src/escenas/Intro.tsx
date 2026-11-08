@@ -5,12 +5,14 @@ import {Fondo} from '../ui/Fondo';
 import {Icono} from '../ui/Iconos';
 import {Logo} from '../ui/Logo';
 import {cuandoDice} from '../tiempos';
+import {useHorizontal} from '../formato';
 
 const MODULOS = ['Punto de venta', 'Inventario', 'Ventas', 'Caja', 'Clientes y fiados', 'Compras', 'Reportes'];
 
 export const Intro: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const h = useHorizontal();
   const cambio = cuandoDice('intro', 'Te presento', 6);
 
   // Parte 1: el cuaderno de siempre
@@ -29,7 +31,7 @@ export const Intro: React.FC = () => {
       {salida1 > 0 && (
         <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: salida1}}>
           <div style={{transform: `scale(${p1}) rotate(${tiembla}deg)`, position: 'relative', color: C.lima}}>
-            <Icono.libreta size={360} grosor={1.3} />
+            <Icono.libreta size={h ? 300 : 360} grosor={1.3} />
             <svg width={420} height={420} viewBox="0 0 100 100" style={{position: 'absolute', left: -30, top: -30}}>
               <line x1="12" y1="12" x2={12 + 76 * tacha} y2={12 + 76 * tacha} stroke={C.rojo} strokeWidth="7" strokeLinecap="round" />
               <line x1="88" y1="12" x2={88 - 76 * tacha} y2={12 + 76 * tacha} stroke={C.rojo} strokeWidth="7" strokeLinecap="round" />
@@ -37,8 +39,8 @@ export const Intro: React.FC = () => {
           </div>
           <div
             style={{
-              marginTop: 70,
-              fontSize: 84,
+              marginTop: h ? 50 : 70,
+              fontSize: h ? 90 : 84,
               fontWeight: 900,
               color: C.blanco,
               textAlign: 'center',
@@ -58,12 +60,12 @@ export const Intro: React.FC = () => {
       {f >= cambio - 2 && (
         <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
           <div style={{transform: `scale(${interpolate(p2, [0, 1], [0.6, 1])})`, opacity: p2}}>
-            <Logo tam={170} />
+            <Logo tam={h ? 140 : 170} />
           </div>
           <div
             style={{
-              marginTop: 80,
-              fontSize: 76,
+              marginTop: h ? 56 : 80,
+              fontSize: h ? 80 : 76,
               fontWeight: 900,
               color: C.blanco,
               textAlign: 'center',
@@ -77,7 +79,7 @@ export const Intro: React.FC = () => {
             <br />
             <span style={{color: C.lima}}>en la palma de tu mano.</span>
           </div>
-          <div style={{marginTop: 80, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, padding: '0 90px'}}>
+          <div style={{marginTop: h ? 56 : 80, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, padding: h ? '0 200px' : '0 90px'}}>
             {MODULOS.map((m, i) => {
               const s = spring({frame: f - cambio - 20 - i * 4, fps, config: {damping: 14}});
               return (

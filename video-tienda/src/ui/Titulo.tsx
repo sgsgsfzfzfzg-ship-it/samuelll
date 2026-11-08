@@ -1,6 +1,7 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FUENTE} from '../tema';
+import {useHorizontal} from '../formato';
 
 /** Encabezado de escena: etiqueta pequeña + título grande que entra palabra por palabra. */
 export const Titulo: React.FC<{
@@ -14,8 +15,9 @@ export const Titulo: React.FC<{
   const {fps} = useVideoConfig();
   const eti = spring({frame: f - 2, fps, config: {damping: 18}});
   const palabras = titulo.split(' ');
+  const horizontal = useHorizontal();
   return (
-    <div style={{position: 'absolute', top, left: 80, right: 80, fontFamily: FUENTE}}>
+    <div style={horizontal ? {position: 'relative', fontFamily: FUENTE} : {position: 'absolute', top, left: 80, right: 80, fontFamily: FUENTE}}>
       <div
         style={{
           display: 'flex',
@@ -57,7 +59,7 @@ export const Titulo: React.FC<{
           </div>
         )}
       </div>
-      <div style={{marginTop: 26, fontSize: 96, lineHeight: 1.02, fontWeight: 900, color: C.blanco, letterSpacing: -3}}>
+      <div style={{marginTop: 26, fontSize: horizontal ? 88 : 96, lineHeight: 1.02, fontWeight: 900, color: C.blanco, letterSpacing: -3}}>
         {palabras.map((p, i) => {
           const s = spring({frame: f - 6 - i * 4, fps, config: {damping: 14}});
           return (

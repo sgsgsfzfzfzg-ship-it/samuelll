@@ -5,6 +5,7 @@ import {Fondo} from '../ui/Fondo';
 import {Icono, NombreIcono} from '../ui/Iconos';
 import {Titulo} from '../ui/Titulo';
 import {cuandoDice} from '../tiempos';
+import {useHorizontal} from '../formato';
 
 const TARJETAS: {icono: NombreIcono; titulo: string; texto: string; palabra: string}[] = [
   {icono: 'recibo', titulo: 'Facturación electrónica', texto: 'Factura válida ante la DIAN desde la misma venta.', palabra: 'facturación'},
@@ -16,11 +17,28 @@ const TARJETAS: {icono: NombreIcono; titulo: string; texto: string; palabra: str
 export const Extras: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const horizontal = useHorizontal();
   return (
     <AbsoluteFill style={{fontFamily: FUENTE}}>
       <Fondo />
-      <Titulo etiqueta="Y además" titulo="Tu tienda, al siguiente nivel" proximamente />
-      <div style={{position: 'absolute', top: 600, left: 70, right: 70, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 34}}>
+      {horizontal ? (
+        <div style={{position: 'absolute', top: 110, left: 130, right: 130}}>
+          <Titulo etiqueta="Y además" titulo="Tu tienda, al siguiente nivel" proximamente />
+        </div>
+      ) : (
+        <Titulo etiqueta="Y además" titulo="Tu tienda, al siguiente nivel" proximamente />
+      )}
+      <div
+        style={{
+          position: 'absolute',
+          top: horizontal ? 440 : 600,
+          left: horizontal ? 130 : 70,
+          right: horizontal ? 130 : 70,
+          display: 'grid',
+          gridTemplateColumns: horizontal ? 'repeat(4, 1fr)' : '1fr 1fr',
+          gap: 34,
+        }}
+      >
         {TARJETAS.map((t, i) => {
           const en = cuandoDice('extras', t.palabra);
           const s = spring({frame: f - en, fps, config: {damping: 12}});
@@ -29,10 +47,10 @@ export const Extras: React.FC = () => {
             <div
               key={t.titulo}
               style={{
-                background: i % 3 === 0 ? C.lima : C.blanco,
+                background: (horizontal ? i % 2 === 0 : i % 3 === 0) ? C.lima : C.blanco,
                 borderRadius: 44,
                 padding: 40,
-                height: 520,
+                height: horizontal ? 500 : 520,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -48,8 +66,8 @@ export const Extras: React.FC = () => {
                 <I size={66} />
               </div>
               <div>
-                <div style={{fontSize: 50, fontWeight: 900, color: C.tinta, lineHeight: 1.02, letterSpacing: -1}}>{t.titulo}</div>
-                <div style={{fontSize: 30, fontWeight: 500, color: '#3d4d45', marginTop: 16, lineHeight: 1.3}}>{t.texto}</div>
+                <div style={{fontSize: horizontal ? 44 : 50, fontWeight: 900, color: C.tinta, lineHeight: 1.02, letterSpacing: -1}}>{t.titulo}</div>
+                <div style={{fontSize: horizontal ? 27 : 30, fontWeight: 500, color: '#3d4d45', marginTop: 16, lineHeight: 1.3}}>{t.texto}</div>
               </div>
             </div>
           );

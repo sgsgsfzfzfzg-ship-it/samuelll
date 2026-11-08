@@ -2,6 +2,7 @@ import React from 'react';
 import {Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, FUENTE} from '../tema';
 import {Icono, NombreIcono} from './Iconos';
+import {useHorizontal} from '../formato';
 
 export type GloboDatos = {
   /** Frame de la escena en que aparece. */
@@ -20,6 +21,11 @@ export const Globo: React.FC<GloboDatos> = ({en, texto, icono, lado, y, sonido =
   const {fps} = useVideoConfig();
   const s = spring({frame: f - en, fps, config: {damping: 11, stiffness: 140}});
   const I = Icono[icono];
+  const horizontal = useHorizontal();
+  const posicion: React.CSSProperties = horizontal
+    ? {position: 'relative'}
+    : {position: 'absolute', top: y, [lado === 'izq' ? 'left' : 'right']: 40};
+  const origen = horizontal || lado === 'izq' ? 'left center' : 'right center';
   return (
     <>
       <Sequence from={en} durationInFrames={45} layout="none">
@@ -27,9 +33,7 @@ export const Globo: React.FC<GloboDatos> = ({en, texto, icono, lado, y, sonido =
       </Sequence>
       <div
         style={{
-          position: 'absolute',
-          top: y,
-          [lado === 'izq' ? 'left' : 'right']: 40,
+          ...posicion,
           display: 'flex',
           alignItems: 'center',
           gap: 18,
@@ -42,8 +46,8 @@ export const Globo: React.FC<GloboDatos> = ({en, texto, icono, lado, y, sonido =
           fontWeight: 800,
           color: C.tinta,
           opacity: interpolate(s, [0, 0.3], [0, 1], {extrapolateRight: 'clamp'}),
-          transform: `scale(${s}) rotate(${interpolate(s, [0, 1], [lado === 'izq' ? -8 : 8, 0])}deg)`,
-          transformOrigin: lado === 'izq' ? 'left center' : 'right center',
+          transform: `scale(${s}) rotate(${interpolate(s, [0, 1], [lado === 'izq' || horizontal ? -8 : 8, 0])}deg)`,
+          transformOrigin: origen,
           whiteSpace: 'nowrap',
           zIndex: 10,
         }}

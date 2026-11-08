@@ -7,7 +7,8 @@
     "voz": "node scripts/voz.mjs",
     "musica": "node scripts/musica.mjs",
     "studio": "remotion studio",
-    "render": "remotion render TiendaMingo out/tienda-mingo.mp4"
+    "render": "remotion render TiendaMingo out/tienda-mingo.mp4",
+    "render:pc": "remotion render TiendaMingoPC out/tienda-mingo-pc.mp4"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.541",

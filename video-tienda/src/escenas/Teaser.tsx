@@ -8,7 +8,9 @@ const ORBITA: NombreIcono[] = ['chat', 'alerta', 'cerebro', 'tienda', 'recibo', 
 
 export const Teaser: React.FC = () => {
   const f = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const horizontal = width > height;
+  const [rx, ry] = horizontal ? [720, 380] : [400, 500];
   const s = spring({frame: f - 4, fps, config: {damping: 12}});
   const s2 = spring({frame: f - 18, fps, config: {damping: 14}});
   return (
@@ -21,14 +23,14 @@ export const Teaser: React.FC = () => {
         {ORBITA.map((nombre, i) => {
           const I = Icono[nombre];
           const ang = (i / ORBITA.length) * Math.PI * 2 + f / 70;
-          const r = 400 * spring({frame: f - 10 - i * 2, fps, config: {damping: 15}});
+          const r = spring({frame: f - 10 - i * 2, fps, config: {damping: 15}});
           return (
             <div
               key={nombre}
               style={{
                 position: 'absolute',
-                left: 540 + Math.cos(ang) * r - 55,
-                top: 960 + Math.sin(ang) * r * 1.25 - 55,
+                left: width / 2 + Math.cos(ang) * rx * r - 55,
+                top: height / 2 + Math.sin(ang) * ry * r - 55,
                 width: 110,
                 height: 110,
                 borderRadius: 32,

@@ -14,6 +14,7 @@ import {MaquetaStock} from './escenas/maquetas/Stock';
 import {MaquetaWhatsApp} from './escenas/maquetas/WhatsApp';
 import {Teaser} from './escenas/Teaser';
 import {GloboDatos} from './ui/Globo';
+import {Formato, FormatoContexto} from './formato';
 import {cuandoDice as d, DURACION_TOTAL, framesEscena, IdEscena, ORDEN, PAUSA_ENTRADA, TRANSICION} from './tiempos';
 
 type G = Omit<GloboDatos, 'en'> & {palabra: string};
@@ -201,7 +202,7 @@ const ESCENAS: Record<IdEscena, React.ReactNode> = {
 const transicion = (i: number) =>
   i % 2 === 0 ? slide({direction: i % 4 === 0 ? 'from-right' : 'from-bottom'}) : fade();
 
-export const TiendaMingo: React.FC = () => {
+export const TiendaMingo: React.FC<{formato: Formato}> = ({formato}) => {
   let inicio = 0;
   const marcas: number[] = [];
   ORDEN.forEach((id) => {
@@ -210,6 +211,7 @@ export const TiendaMingo: React.FC = () => {
   });
 
   return (
+    <FormatoContexto.Provider value={formato}>
     <AbsoluteFill style={{background: '#04130E'}}>
       <TransitionSeries>
         {ORDEN.flatMap((id, i) => {
@@ -250,5 +252,6 @@ export const TiendaMingo: React.FC = () => {
         }}
       />
     </AbsoluteFill>
+    </FormatoContexto.Provider>
   );
 };

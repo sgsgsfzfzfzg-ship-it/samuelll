@@ -1,9 +1,7 @@
 import React from 'react';
-import {AbsoluteFill, OffthreadVideo, Sequence, staticFile} from 'remotion';
-import {Fondo} from '../ui/Fondo';
-import {Globo, GloboDatos} from '../ui/Globo';
-import {Telefono} from '../ui/Telefono';
-import {Titulo} from '../ui/Titulo';
+import {OffthreadVideo, Sequence, staticFile} from 'remotion';
+import {GloboDatos} from '../ui/Globo';
+import {Plantilla} from '../ui/Plantilla';
 import {FPS, framesEscena, IdEscena} from '../tiempos';
 
 export type DemoProps = {
@@ -22,10 +20,7 @@ export const EscenaDemo: React.FC<DemoProps> = ({id, numero, etiqueta, titulo, t
   const segTotal = tramos.reduce((s, [a, b]) => s + (b - a), 0);
   let desde = 0;
   return (
-    <AbsoluteFill>
-      <Fondo />
-      <Titulo numero={numero} etiqueta={etiqueta} titulo={titulo} />
-      <Telefono top={560} retraso={4}>
+    <Plantilla numero={numero} etiqueta={etiqueta} titulo={titulo} globos={globos}>
         {tramos.map(([a, b], i) => {
           const dur = i === tramos.length - 1 ? total - desde : Math.round((total * (b - a)) / segTotal);
           const vel = ((b - a) * FPS) / dur;
@@ -43,10 +38,6 @@ export const EscenaDemo: React.FC<DemoProps> = ({id, numero, etiqueta, titulo, t
           desde += dur;
           return el;
         })}
-      </Telefono>
-      {globos.map((g, i) => (
-        <Globo key={i} {...g} />
-      ))}
-    </AbsoluteFill>
+    </Plantilla>
   );
 };
