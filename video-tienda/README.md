@@ -3,7 +3,7 @@
 Video vertical (1080×1920, ~2 min 18 s) que muestra el sistema de punto de venta de Tienda Mingo.
 Está hecho con [Remotion](https://www.remotion.dev/) y narrado con ElevenLabs (voz "Sofía", acento colombiano).
 
-Resultado: `out/tienda-mingo.mp4`
+Resultado: `out/tienda-mingo-liviano.mp4` (versión comprimida para WhatsApp). `npm run render` genera `out/tienda-mingo.mp4` en máxima calidad.
 
 ## Estructura del video
 
